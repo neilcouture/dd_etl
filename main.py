@@ -15,6 +15,7 @@ from typing import Any
 import pandas as pd
 
 from otel_etl.main import denormalize_metrics as _otel_denormalize
+from otel_etl.main import run_profiler_from_dataframe
 from otel_etl.profiler.schema_generator import (
     generate_schema,
     save_schema,
@@ -168,7 +169,15 @@ def denormalize_metrics(
     Returns:
         Wide-format DataFrame with features as columns.
     """
-    return _otel_denormalize(raw_df, schema_config=schema_config, **kwargs)
+    df = raw_df.copy()
+    # When loaded from CSV, labels and timestamps may be strings — normalize
+    if not df.empty:
+        if isinstance(df["labels"].iloc[0], str):
+            import ast
+            df["labels"] = df["labels"].apply(ast.literal_eval)
+        if not pd.api.types.is_datetime64_any_dtype(df["timestamp"]):
+            df["timestamp"] = pd.to_datetime(df["timestamp"])
+    return _otel_denormalize(df, schema_config=schema_config, **kwargs)
 
 
 def start_receiver(

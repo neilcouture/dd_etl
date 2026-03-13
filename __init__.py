@@ -12,13 +12,20 @@ Public API:
     - filter_by_service():  Re-exported from otel_etl
 """
 
-from dd_etl.main import run_profiler, run_profiler_from_receiver, denormalize_metrics, start_receiver
+from dd_etl.main import (
+    run_profiler,
+    run_profiler_from_receiver,
+    run_profiler_from_dataframe,
+    denormalize_metrics,
+    start_receiver,
+)
 from dd_etl.receiver.metric_store import MetricStore
 from otel_etl.utils.filters import filter_by_service
 
 __all__ = [
     "run_profiler",
     "run_profiler_from_receiver",
+    "run_profiler_from_dataframe",
     "denormalize_metrics",
     "start_receiver",
     "MetricStore",
